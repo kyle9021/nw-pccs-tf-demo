@@ -57,7 +57,7 @@ variable "region" {
 
 resource "aws_s3_bucket" "data" {
   bucket        = "${local.resource_prefix.value}-data"
-  acl           = "public-read"
+  acl           = "private"
   force_destroy = true
   tags = merge({
     Name        = "${local.resource_prefix.value}-data"
@@ -72,6 +72,29 @@ resource "aws_s3_bucket" "data" {
     git_repo             = "terragoat"
     yor_trace            = "0874007d-903a-4b4c-945f-c9c233e13243"
   })
+}
+
+
+resource "aws_s3_bucket" "data_log_bucket" {
+  bucket = "data-log-bucket"
+}
+
+resource "aws_s3_bucket_logging" "data" {
+  bucket = aws_s3_bucket.data.id
+
+  target_bucket = aws_s3_bucket.data_log_bucket.id
+  target_prefix = "log/"
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "data" {
+  bucket = aws_s3_bucket.data.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "AES256"
+    }
+  }
+}
+
 }
 
 resource "aws_s3_bucket_object" "data_object" {
@@ -140,4 +163,3 @@ resource "aws_s3_bucket" "operations" {
   })
 
 }
-

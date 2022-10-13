@@ -38,6 +38,8 @@ jobs:
       - name: Run Prisma Code Security
         id: Bridgecrew
         uses: bridgecrewio/bridgecrew-action@master
+        env:
+          PRISMA_API_URL: https://api2.prismacloud.io
         with:
           api-key: ${{ secrets.BRIDGECREW_API_KEY }}
           directory: ./
